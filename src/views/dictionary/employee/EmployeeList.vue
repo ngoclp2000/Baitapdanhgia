@@ -3,16 +3,18 @@
         <div :class="{'toggle-navbar' : toggle.isToggleNavbar}" class="content">
             <div class="content-header">
                 <div class="title">{{title}}</div>
-                <BaseButton @click="displayAddForm" classList="m-btn-default" bgColor="#2ca01c" :btnText="btnAddText" />
+                <BaseButton @click="displayAddForm" classList="m-btn-default" bgHoverColor="#35bf22" bgColor="#2ca01c" :btnText="btnAddText" />
             </div>
             <div class="main-content">
                 <div class="toolbar-content">
                     <div class="filter-bar">
                         <div class="filter-right">
-                            <BaseInput contentPlHolder="Tìm theo mã, tên nhân viên"
+                            <BaseInput contentPlHolder="Tìm theo mã, tên nhân viên, số điện thoại"
                                 classList="icon-search input-search user-input" type="text" errorContent="" refType=""
-                                validType="search" ref="searchchingInput" @enterPress="searchData" />
-                            <div class="refesh-icon" @click="refreshData">
+                                validType="search" ref="searchchingInput" @enterPress="searchData"
+                                tooltipContent="Nhập thông tin tìm kiếm" noneCheck="true" />
+                            <div class="refesh-icon" @click="refreshDataButtonClick" v-tooltip="'Cập nhật dữ liệu'">
+
                             </div>
                         </div>
                     </div>
@@ -26,23 +28,22 @@
                 <LoadingSpinner v-if="isShowSpinner && totalRecord != 0" />
                 <BasePagingBar v-if="totalRecord != 0" type="nhân viên" @updatePageSize="updatePageSize"
                     :pageSize="$store.state.data.payload.pageSize" ref="pagingBar" @updatePagination="updatePagination"
-                    :totalRecord="totalRecord" :maxPageNumber="maxPageNumber" :isReady="isReady"/>
+                    :totalRecord="totalRecord" :maxPageNumber="maxPageNumber" :isReady="isReady" />
                 <div class="no-content" v-if="totalRecord == 0">
                     <div class="no-content-img">
-                         
+
                     </div>
                     <div class="no-content-text">
                         Không có dữ liệu
                     </div>
-                   <LoadingSpinner v-if="isShowSpinner" />
+                    <LoadingSpinner v-if="isShowSpinner" />
                 </div>
-                
+
             </div>
 
         </div>
         <EmployeeDetail @hideForm="hideForm" v-if="isShowForm" @refreshData="refreshData" ref="employee" />
-        <BasePopup @hideLayout="isShowPopUp=false" @deleteData="deleteData" ref="confirmation"
-            :objectPopUp="objectPopUp" />
+        <BasePopup @hideLayout="isShowPopUp=false" @deleteData="deleteData" ref="confirmation" />
     </div>
 </template>
 
@@ -50,23 +51,27 @@
     import BaseTable from '../../../components/BaseTable.vue'
     import EmployeeDetail from './EmployeeDetail.vue'
     import BaseButton from '../../../components/BaseButton.vue'
-    //import BaseCombobox from '../../../components/BaseCombobox.vue'
     import BasePopup from '../../../components/BasePopup.vue'
     import BaseInput from '../../../components/BaseInput.vue'
     import BasePagingBar from '../../../components/BasePagingBar.vue'
     import LoadingSpinner from '../../../layout/LoadingSpinner.vue'
     import EmployeeAPI from '../../../api/components/EmployeeAPI'
-    import MISACODE from '../../../store/const.js'
-    //import Common from '../../../store/common.js'
-    const papa = require('papaparse')
+    import {
+        MISACODE
+    } from '../../../store/resource.js'
     import {
         mapActions,
         mapMutations
     } from 'vuex'
     export default {
+        created() {
+            // Trường dữ liệu cho Employe
+            this.ths = this.resource[this.$browserLocale]['management']['entity']['Employee']['tableFieldName']['main'];
+            this.title = this.resource[this.$browserLocale]['management']['entity']['Employee']['title'];
+        },
         async mounted() {
             let payload = {
-                contentFilter: "NV",
+                contentFilter: "",
                 pageSize: 10,
                 pageIndex: 0
             }
@@ -86,159 +91,22 @@
                 currentPage: 1,
                 dataDepartments: [],
                 dataPositions: [],
-                objectPopUp: {
-                    classContainer: "",
-                    titlePopUp: "",
-                    contentPopUp: "",
-                    type: "",
-                    buttonTexts: [],
-                    btnClassList: [],
-                },
                 btnAddText: "Thêm mới nhân viên",
-                title: "Nhân viên",
-                popupContent: "",
+                title: "",
                 type: "employee-table",
-                ths: [{
-                        fieldName: "EmployeeCode",
-                        value: "MÃ NHÂN VIÊN",
-                        type: "number",
-                    }, {
-                        fieldName: "EmployeeName",
-                        value: "TÊN NHÂN VIÊN",
-                        colWidth: "250px",
-                    }, {
-                        fieldName: "GenderName",
-                        value: "GIỚI TÍNH",
-                    }, {
-                        fieldName: "DateOfBirth",
-                        value: "NGÀY SINH",
-                        textAlign: "center",
-                    }, {
-                        fieldName: "IdentityNumber",
-                        value: "SỐ CMND",
-                        type: "number",
-                    },
-                    {
-                        fieldName: "EmployeePosition",
-                        value: "CHỨC DANH",
-                        colWidth: "250px",
-                    }, {
-                        fieldName: "DepartmentName",
-                        value: "TÊN ĐƠN VỊ",
-                        colWidth: "250px",
-                    }, {
-                        fieldName: "BankAccountNumber",
-                        value: "SỐ TÀI KHOẢN",
-                    }, {
-                        fieldName: "BankName",
-                        value: "TÊN NGÂN HÀNG",
-                        colWidth: "250px",
-                    }, {
-                        fieldName: "BankBranchName",
-                        value: "CHI NHÁNH TK NGÂN HÀNG",
-                        colWidth: "250px",
-                    },
-                ]
+                ths: [],
             }
         },
         components: {
             BaseTable,
             EmployeeDetail,
             BaseButton,
-            //BaseCombobox,
             BasePopup,
             BaseInput,
             BasePagingBar,
             LoadingSpinner
         },
-
         methods: {
-            /**
-             * Trigger input 
-             * Created By TBN(1/8/2021)
-             */
-            importData() {
-                this.$refs.upload.click();
-            },
-            /**
-             * Xử lý sự kiện import dữ liệu
-             * Created By TBN (1/8/2021)
-             */
-            async importDataHandle() {
-                let uploadInput = this.$refs.upload
-                if (uploadInput.files && uploadInput.files[0]) {
-                    let fileImport = uploadInput.files[0];
-                    papa.parse(fileImport, {
-                        header: true, // Don't bog down the main thread if its a big file
-                        complete: async (result) => {
-                            // do stuff with result
-                            this.isShowSpinner = true;
-                            result.data.pop()
-                            try {
-                                // Thêm mới dữ liệu
-                                let res = await EmployeeAPI.createNewData(result.data);
-                                // Kiểm tra dữ liệu
-                                if (res.data.MISACode == MISACODE.NotValid) {
-                                    // Dữ liệu lỗi đưa ra các lỗi bằng toast message
-                                    let arrError = res.data.Message;
-                                    arrError.forEach(async (element) => {
-                                        let index = await this.$store.dispatch('randomText',
-                                            4)
-                                        let content = element.usrMsg
-                                        let type = "error"
-                                        let payloadToast = {
-                                            content,
-                                            type,
-                                            index
-                                        }
-                                        this.$store.dispatch('createToast', payloadToast)
-                                    });
-                                } else if (res.data.MISACode == MISACODE.Success) {
-                                    // Dữ liệu không có lỗi và thêm mới thành công
-                                    let index = await this.$store.dispatch('randomText', 4)
-                                    let type = "success";
-                                    let content = res.data.Message.usrMsg
-                                    let payloadToast = {
-                                        content,
-                                        type,
-                                        index
-                                    }
-                                    this.$store.dispatch('createToast', payloadToast)
-                                    this.refreshData();
-                                } else {
-                                    // Thêm mới thất bại dữ liệu không lỗi
-                                    let index = await this.$store.dispatch('randomText', 4)
-                                    let type = "error";
-                                    let content = res.data.Message.usrMsg
-                                    let payloadToast = {
-                                        content,
-                                        type,
-                                        index
-                                    }
-                                    this.$store.dispatch('createToast', payloadToast);
-                                }
-                                this.isShowSpinner = false;
-                            } catch (error) {
-                                // Lỗi hệ thống, dữ liệu
-                                if (error.response.status == 400) {
-                                    let index = await this.$store.dispatch('randomText', 4)
-                                    let content = "Dữ liệu có lỗi vui lòng kiểm tra lại"
-                                    let type = "error"
-                                    let payload = {
-                                        content,
-                                        type,
-                                        index
-                                    }
-                                    this.$store.dispatch('createToast',
-                                        payload)
-                                }
-                                this.isShowSpinner = false;
-                            }
-                        }
-                    });
-                }
-
-            },
             /**
              * Cập nhật tổng số bản ghi
              * Created By TBN(25/7/2021)
@@ -251,24 +119,10 @@
              * Created By TBN(25/7/2021)
              */
             async displayAddForm() {
-                if (this.isReady) {
-                    this.isShowForm = true;
-                    setTimeout(() => {
-                        this.$refs.employee.init()
-                        this.$refs.employee.isEdit = false
-                    }, 10)
-                } else {
-                    let index = await this.$store.dispatch('randomText', 4)
-                    let content = "Dữ liệu chưa sẵn sàng"
-                    let type = "warning"
-                    let payloadToast = {
-                        content,
-                        type,
-                        index
-                    }
-                    this.$store.dispatch('createToast', payloadToast)
-                }
-
+                this.isShowForm = true;
+                setTimeout(() => {
+                    this.$refs.employee.init()
+                }, 0)
             },
             /**
              * Ẩn spinner
@@ -285,11 +139,18 @@
                 this.$refs.employee.title = "THÊM NHÂN VIÊN"
                 this.isShowForm = false;
             },
+            /**
+             * Hàm kiểm tra các trường dữ liệu đưa lên request 
+             * Created By TBN (20/8/2021)
+             */
             checkField(payload) {
                 // Lấy dữ liệu departmentId,positionId,employeeFilter từ các trường tìm kiếm
                 let contentFilter = this.$refs.searchchingInput.inputContent;
+                if (contentFilter != null) {
+                    payload["contentFilter"] = contentFilter.split(' ').filter(e => e != "").join(' ');
+                } else payload["contentFilter"] = null;
                 // Kiểm tra xem có chọn phòng ban,vị trí cụ thể hay không
-                contentFilter != "" ? payload["contentFilter"] = contentFilter : payload["contentFilter"] = "NV"
+                //contentFilter != "" ? payload["contentFilter"] = contentFilter : payload["contentFilter"] = "NV"
             },
             /**
              * Lọc dữ liệu theo tiêu chí
@@ -310,17 +171,47 @@
                 }
             },
             /**
+             * Sự kiện bấm nút refresh
+             * Created By TBN(20/8/2021)
+             */
+            async refreshDataButtonClick() {
+                if (this.isReady) {
+                    if (this.$refs.pagingBar)
+                        this.$refs.pagingBar.currentPage = 1;
+                    this.updatePagination(1);
+                } else {
+                    let index = await this.$store.dispatch('randomText', 4)
+                    let content = "Dữ liệu chưa sẵn sàng"
+                    let type = "warning"
+                    let payloadToast = {
+                        content,
+                        type,
+                        index
+                    }
+                    this.$store.dispatch('createToast', payloadToast)
+                }
+            },
+            /**
              * Cập nhật lại dữ liệu theo tiêu chí trong payload
              * Created By TBN(27/7/2021)
              */
             async refreshData() {
+                // Hiện spinner,chuyển trạng thái chưa sẵn sàng, chuyển trạng thái chưa sẵn sàng xuống table
                 this.isShowSpinner = true;
                 this.isReady = false;
+                this.$refs.table.isReady = false;
                 try {
+                    // Gọi API lấy dữ liệu theo phân trang,tìm kiếm...
                     let res = await EmployeeAPI.filterEmployees(this.$store.state.data.payload);
+                    // Cập nhật giá trị tổng số trang, tổng số bản ghi
                     this.updateMaxPageNumber(res.data.TotalPage);
                     this.updateTotalRecord(res.data.TotalRecord);
+                    // Gán dữ liệu cho bảng
                     this.$refs.table.setData(res.data.Data)
+                    // Cập nhật dữ liệu cho bảng: 
+                    //  dòng được chọn(checkedList)
+                    //  kiểu sắp xếp dữ liệu (true = Desc, false = Asc) (sortDirectionList)
+                    //  Danh sách ẩn hiện cho context menu (displayFunctionList)
                     let newList = [];
                     res.data.Data.forEach(() => {
                         newList.push(false);
@@ -328,6 +219,7 @@
                     this.$refs.table.checkedList = [...newList];
                     this.$refs.table.sortDirectionList = [...newList];
                     this.$refs.table.displayFunctionList = [...newList];
+                    // Chuyển dữ liệu vào kho (store)
                     this.$store.commit('SET_ENTITY_DATA', res.data.Data)
                     // Chuyển dấu tích chọn về default
                     if (this.$refs.table.$refs.all.checked)
@@ -343,7 +235,9 @@
                             }
                         }
                     }
+                    // Chuyển trạng thái về sẵn sàng, dữ liệu
                     this.isReady = true;
+                    this.$refs.table.isReady = true;
                 } catch (error) {
                     if (error.response.data.Message != null) {
                         let index = await this.$store.dispatch('randomText', 4)
@@ -366,54 +260,23 @@
                         }
                         this.$store.dispatch('createToast', payloadToast)
                     }
+                    this.table.isReady = true;
                 }
-                this.hideSpinner();
+                this.hideSpinner(); // Ẩn spinner
             },
             /**
              * Xóa dữ liệu theo danh sách EmployeeId
              * Created by TBN (31/7/2021)
              */
             async deleteData() {
-                if (this.isReady) {
-                    this.isShowSpinner = true;
-                    try {
-                        let res = null;
-                        if (this.selectedData.length > 1) {
-                            let arrayCustomerId = this.selectedData.map(a => a.CustomerId);
-                            res = await EmployeeAPI.deleteMultipleData(arrayCustomerId);
-                        } else {
-                            res = await EmployeeAPI.deleteData(this.selectedData[0].EmployeeId);
-                        }
-                        if (res.data.MISACode == MISACODE.Fail) {
-                            this.isShowSpinner = false;
-                            let index = await this.$store.dispatch('randomText', 4)
-                            let content = "Xóa khách hàng thất bại"
-                            let type = "error"
-                            let payloadToast = {
-                                content,
-                                type,
-                                index
-                            }
-                            this.$store.dispatch('createToast', payloadToast)
-                        } else {
-                            this.isShowSpinner = false;
-                            let index = await this.$store.dispatch('randomText', 4)
-                            let content = "Xóa khách hàng thành công"
-                            let type = "success"
-                            let payloadToast = {
-                                content,
-                                type,
-                                index
-                            }
-                            this.$store.dispatch('createToast', payloadToast);
-                            this.selectedData = [];
-                            await this.refreshData();
-                            this.isShowSpinner = false;
-                        }
-                    } catch (error) {
+                this.isShowSpinner = true; // Hiện spinner
+                try {
+                    let res = await EmployeeAPI.deleteData(this.selectedData[0].EmployeeId);
+                    // Kiểm tra trạng thái thành công hay thất bại của thao tác xóa
+                    if (res.data.MISACode == MISACODE.Fail) {
                         this.isShowSpinner = false;
                         let index = await this.$store.dispatch('randomText', 4)
-                        let content = error.data.Message.usrMsg
+                        let content = "Xóa khách hàng thất bại"
                         let type = "error"
                         let payloadToast = {
                             content,
@@ -421,11 +284,27 @@
                             index
                         }
                         this.$store.dispatch('createToast', payloadToast)
+                    } else {
+                        this.isShowSpinner = false;
+                        let index = await this.$store.dispatch('randomText', 4)
+                        let content = "Xóa khách hàng thành công"
+                        let type = "success"
+                        let payloadToast = {
+                            content,
+                            type,
+                            index
+                        }
+                        this.$store.dispatch('createToast', payloadToast);
+                        this.selectedData = [];
+                        await this.refreshData();
+                        this.isShowSpinner = false;
                     }
-                } else {
+                } catch (error) {
+                    // Hiện lỗi trả về (500)
+                    this.isShowSpinner = false;
                     let index = await this.$store.dispatch('randomText', 4)
-                    let content = "Dữ liệu chưa sẵn sàng"
-                    let type = "warning"
+                    let content = error.data.Message.usrMsg
+                    let type = "error"
                     let payloadToast = {
                         content,
                         type,
@@ -439,49 +318,35 @@
              * Created By TBN (2/8/2021)
              */
             async displayConfirmationPopup() {
-                if (this.isReady) {
-                    if (this.selectedData.length > 0) {
-                        this.popupContent = "Bạn có thực sự muốn xóa Nhân viên <" + this.selectedData[0]
-                            .EmployeeCode + "> không?"
-                        // Chỉnh thông tin cho popup
-                        this.objectPopUp.contentPopUp = this.popupContent;
-                        this.objectPopUp.type = "confirmation"
-                        this.objectPopUp.buttonTexts = ["Không", "", "Có"];
-                        // Hiện popup
-                        this.$refs.confirmation.isShow = true;
-                        this.isShowPopUp = true;
-                    } else {
-                        let index = await this.$store.dispatch('randomText', 4)
-                        let content = "Bạn chưa chọn nhân viên nào"
-                        let type = "warning"
-                        let payloadToast = {
-                            content,
-                            type,
-                            index
-                        }
-                        this.$store.dispatch('createToast', payloadToast)
-                    }
-                } else {
-                    let index = await this.$store.dispatch('randomText', 4)
-                    let content = "Dữ liệu chưa sẵn sàng"
-                    let type = "warning"
-                    let payloadToast = {
-                        content,
-                        type,
-                        index
-                    }
-                    this.$store.dispatch('createToast', payloadToast)
-                }
+                // Chỉnh thông tin cho popup
+                this.objectPopUp.contentPopUp = this.popupContent['delete'].format(this.selectedData[0]
+                    .EmployeeCode);
+                this.objectPopUp.type = "warning"
+                this.objectPopUp.buttonTexts = ["Không", "", "Có"];
+                // Hiện popup
+                this.$refs.confirmation.isShow = true;
+                this.isShowPopUp = true;
             },
             /**
              * Hiển thị form sửa nhân viên
-             * Create By TBN
+             * Create By TBN(26/7/2021)
              */
-            async displayFormEdit(selectedData,isDuplicate) {
+            async displayFormEdit(selectedData, isDuplicate) {
                 this.isShowForm = true;
                 this.$nextTick(async () => {
                     this.$refs.employee.isEdit = true;
                     this.$refs.employee.isDuplicate = isDuplicate;
+                    await this.$refs.employee.bindingData(selectedData);
+                })
+            },
+            /**
+             * Hiển thị form nhân bản
+             * Created BaseTable TBN(21/8/2021)
+             */
+            async displayFormDuplicate(selectedData) {
+                this.isShowForm = true;
+                this.$nextTick(async () => {
+                    this.$refs.employee.isDuplicate = true;
                     await this.$refs.employee.bindingData(selectedData);
                 })
             },
@@ -509,13 +374,13 @@
              * Cập nhật dữ liệu phân trang 
              * Created By TBN(26/7/2021)
              */
-            updatePagination(pageNumber) {
+            async updatePagination(pageNumber) {
                 // Xử lý tương tự như lọc dữ liệu chỉ thay đổi pageNumber
                 let payload = this.$store.state.data.payload
                 this.checkField(payload)
                 payload["pageIndex"] = pageNumber
                 this.currentPage = pageNumber
-                this.refreshData()
+                await this.refreshData()
             },
             /**
              * Cập nhật kích thước trang
@@ -537,19 +402,21 @@
              * Nếu có điều chỉnh lại giao diện
              * Created By TBN (19/8/2021)
              */
-            checkOverFlowTable(){
+            checkOverFlowTable() {
                 let contentHeader = document.querySelector('.content .content-header');
                 let toolbarContent = document.querySelector('.content .main-content .toolbar-content');
                 let rectContentHeader = contentHeader.getBoundingClientRect();
                 let reactToolbarContent = toolbarContent.getBoundingClientRect();
-                let amountDistance = 30,widthScrollBar = 10;
+                let amountDistance = 30,
+                    widthScrollBar = 10;
                 let diff = reactToolbarContent.right + amountDistance - rectContentHeader.right;
-                let initailPaddingRight = window.getComputedStyle(contentHeader, null).getPropertyValue('padding-right').replaceAll(/[^0-9]/g, '');
-                
-                if(Math.abs(diff) == widthScrollBar && initailPaddingRight == amountDistance){
-                    contentHeader.style.paddingRight = (parseInt(initailPaddingRight,10) - diff) + "px" ;
-                }else{
-                    if(diff == 0){
+                let initailPaddingRight = window.getComputedStyle(contentHeader, null).getPropertyValue('padding-right')
+                    .replaceAll(/[^0-9]/g, '');
+
+                if (Math.abs(diff) == widthScrollBar && initailPaddingRight == amountDistance) {
+                    contentHeader.style.paddingRight = (parseInt(initailPaddingRight, 10) - diff) + "px";
+                } else {
+                    if (diff == 0) {
                         contentHeader.style.paddingRight = amountDistance + "px";
                     }
                 }
@@ -560,6 +427,15 @@
         computed: {
             toggle() {
                 return this.$store.state.toggle
+            },
+            objectPopUp() {
+                return this.$store.state.data.objectPopUp;
+            },
+            resource(){
+                return this.$store.state.resource;
+            },
+            popupContent(){
+                return this.$store.state.resource[this.$browserLocale]['management']['entity']['Employee']['popupContent'];
             }
         }
 

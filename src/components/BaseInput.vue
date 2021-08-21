@@ -2,13 +2,24 @@
     <div class="input-container" :class="classInputContainer">
         <!-- <div v-show="isDisplayX" @click="resetInput" class="x-icon"
             :class="[validType == 'money' || type == 'right-text'? 'currency-icon' : '',validType == 'search' ? 'search-icon' : '',iconClass]"></div> -->
-        <input :tabindex="tabindex" :maxlength="maxlength" @mouseover="isDisplayError = true" @mouseleave="isDisplayError=false"
-            :placeholder="contentPlHolder" v-model="inputContent" ref="input" @keydown="evtKeyboardChoosingOption"
-            @input="inputChange" @change="validateContent" @keyup.enter="$emit('enterPress')"
-            @keydown.tab="$emit('tabPress')" :type="type" :disabled="isDisabled"
+        <input :tabindex="tabindex" :maxlength="maxlength" @mouseover="isDisplayToolTip = true" ref="input"
+            @mouseleave="isDisplayToolTip=false" :placeholder="contentPlHolder" v-model="inputContent"
+            @keydown="evtKeyboardChoosingOption" @input="inputChange" @blur="validateContent"
+            @keyup.enter="$emit('enterPress')" @keydown.tab="$emit('tabPress')" :type="type" :disabled="isDisabled"
             :class="[classList, isError ? 'error' : '', active?'active':'',(isReadyData != null && !isReadyData) ? 'waiting-input' : '']"
-             >
-        <div v-show="isError && isDisplayError" class="wrong-input" style="z-index:100">{{errorContentData}}</div>
+            v-tooltip="{
+                content: (noneCheck == null ? errorContentData : tooltipContent),
+                delay: {
+                    show: 300,
+                    hide: 0,
+                },
+                trigger: 'manual',
+                show: (isError && isDisplayToolTip) || (noneCheck != null && isDisplayToolTip),
+            }">
+        <!-- <div class="tooltip bottom" ref="tooltip" v-show="isError && isDisplayError && (disableToolTip == null)">
+            {{errorContentData}}
+        </div> -->
+        <!-- <div v-show="isError && isDisplayError" class="wrong-input" style="z-index:100">{{errorContentData}}</div> -->
         <div v-show="validType == 'money'" class="currency">(VND)</div>
     </div>
 </template>
@@ -17,29 +28,41 @@
     import Validation from '../store/validate'
     import Format from '../store/format'
     export default {
-        created(){
-            this.errorContentData = this.errorContent;
+        created() {
+            switch(this.validType) {
+                case 'required':
+                    this.errorContentData = this.errorContent.empty;
+                    break;
+            }
+            
         },
-        props: ['maxlength', 'contentPlHolder', 'type', 'classList', 'errorContent', 'validType',
-            'iconClass','tabindex','classInputContainer', 'isDisabled' , 'name', 'isReadyData','isShowDropdown'
+        props: ['maxlength', 'contentPlHolder', 'type', 'classList', 'validType',
+            'iconClass', 'tabindex', 'classInputContainer', 'isDisabled', 'name', 'isReadyData', 'isShowDropdown',
+            'tooltipContent', 'disableToolTip','noneCheck'
         ],
         data() {
             return {
-                isDisplayError: false,
+                isDisplayToolTip: false,
                 isError: false,
                 isDisplayX: false,
-                inputContent: "",
+                inputContent: null,
                 active: false,
                 errorContentData: "",
+                isChange : false,
             }
         },
-        
+
         methods: {
+            /**
+             * 
+             */
             inputChange() {
+                this.isDisplayToolTip = false;
+                this.isChange = true;
                 if (this.inputContent.length != 0) {
                     if (this.validType == "money")
                         this.inputContent = Format.formatMoney(this.inputContent)
-                    else if(this.validType == "telephoneNumber")
+                    else if (this.validType == "telephoneNumber")
                         this.inputContent = Format.formatTelephoneNumber(this.inputContent);
                     this.isDisplayX = true;
                 } else {
@@ -57,14 +80,13 @@
              */
             evtKeyboardChoosingOption(e) {
                 if (this.validType == 'combobox' && [38, 40, 13].includes(e.keyCode))
-                    this.$emit('evtKeyboardChoosingOption', e.keyCode,e)
+                    this.$emit('evtKeyboardChoosingOption', e.keyCode, e)
             },
             /**
              * Phương thức kiểm tra tính đúng đắn của dữ liệu trong input theo từng loại.
              * Created by TBN (22/7/2021)
              */
             validateContent() {
-
                 // Kiểm tra nội dung
                 if (this.inputContent.length > 0) {
                     // Nếu dữ liệu không rỗng
@@ -101,55 +123,26 @@
                                 this.isError = true;
                             break;
                         case "telephoneNumber":
-                            if(Validation.checkTelephoneNumber(this.inputContent)){
+                            if (Validation.checkTelephoneNumber(this.inputContent)) {
                                 this.isError = false;
-                            }else
+                            } else
                                 this.isError = true;
                             break;
                     }
 
                 } else {
                     // Nếu nội dung trống
-                    this.isDisplayX = false; // Tắt dấu xóa nội dung input
+                    //this.isDisplayX = false; // Tắt dấu xóa nội dung input
                     // Nếu là combox và input không cần check lỗi thì sẽ dừng phương thức
-                    let requiredField = ["identification", "email", "phoneNumber", "required"]
-                    if (!requiredField.includes(this.validType)) {
+                    let requiredField = ["required"]
+                    if (!requiredField.includes(this.validType) || !this.isChange) {
                         this.isError = false;
-                        return
+                        return;
                     }
-
                     // Nếu không sẽ hiện lỗi
                     this.isError = true;
+                    this.errorContentData = this.errorContent.empty
                 }
-            },
-            /**
-             * Ẩn nút xóa nội dung input
-             * Created by TBN (22/7/2021)
-             */
-            removeXIcon() {
-                this.isDisplayX = false;
-            },
-            /**
-             * Thiết lập lại trạng thái ban đầu của input
-             * Created by TBN (22/7/2021)
-             */
-            resetInput() {
-                // Focus vào input
-                this.$refs.input.focus();
-                this.inputContent = ""; // Xóa nội dung
-                this.removeXIcon() // Ẩn nút xóa nội dung
-                // Nếu là các input cần validate thì sẽ hiện lỗi trống dữ liệu
-                let requiredField = ["identification", "email", "phoneNumber", "required"]
-                if (!requiredField.includes(this.validType))
-                    this.isError = false;
-                else
-                    this.isError = true;
-                this.$emit("bindingDataInput","");
-                // Emit lên component cha sự kiện đặt lại trạng thái option
-                this.$emit('resetOption');
-                // Nếu là combobox thì sẽ emit sự kiện lọc dữ liệu
-                if (this.validType == "combobox")
-                    this.$emit("filterOption", this.inputContent)
             },
             /**
              * Xét dữ liệu cho input
@@ -165,17 +158,24 @@
              * Created by TBN (22/7/2021) 
              */
             init(initialValue) {
+                this.isChange = false;
                 // Trigger Updated Stage
                 this.inputContent = initialValue;
                 if (initialValue != "" && initialValue != null)
                     this.isDisplayX = true;
                 this.$emit('updateInput', this.inputContent) // Emit sự kiện cập nhật nội dung input lên component cha
-                this.$emit('bindingDataInput',this.inputContent);
+                this.$emit('bindingDataInput', this.inputContent);
             }
         },
         computed: {
             toggle() {
                 return this.$store.state.toggle;
+            },
+            resource() {
+                return this.$store.state.resource;
+            },
+            errorContent(){
+                return this.resource[this.$browserLocale]['management']['entity']['Employee']['dictionaryError'][this.name];
             }
         }
     }
@@ -189,7 +189,8 @@
     .active {
         border-color: rgb(44, 160, 28)
     }
-    .waiting-input{
+
+    .waiting-input {
         background-color: #e9e9e9e9 !important;
     }
 </style>

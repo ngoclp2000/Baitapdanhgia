@@ -2,6 +2,7 @@
     <div>
         <date-pick ref="datePick" :class="{'error' : isError}" @mouseover.native="isDisplayError = true"
             @mouseleave.native="isDisplayError=false" v-model="date" @change.native="checkBlur"
+            @input.native="formatDateInput($event)" :isDateDisabled="isFutureDate"
             :displayFormat="'DD/MM/YYYY'" :months="months" :weekdays="weekdays" nextMonthCaption="Tháng sau"
             prevMonthCaption="Tháng trước" :inputAttributes="{tabindex,placeholder: 'DD/MM/YYYY'}"></date-pick>
         <div v-show="isError && isDisplayError" class="wrong-input">{{errorContent}}</div>
@@ -11,14 +12,14 @@
 <script>
     import DatePick from 'vue-date-pick';
     import 'vue-date-pick/dist/vueDatePick.css';
-    //import DatePicker from '../store/datepick.js'
+    import Format from '../store/format.js'
     import Validation from '../store/validate.js'
     export default {
         created() {
-            //DatePicker.runLoop();
+            this.errorContent = this.resource[this.$browserLocale]['management']['entity']['Employee']['dictionaryError'][this.name].invalid;
+            
         },
         destroyed() {
-            //DatePicker.stopLoop();
         },
         components: {
             DatePick
@@ -41,30 +42,36 @@
         }),
         watch: {
             date() {
-                //if (!this.isEdit || this.isEdit == null) {
-                let input = this.$refs.datePick.$el.querySelector('input')
+                let input = this.$refs.datePick.$el.querySelector('input');
                 if (this.date == "") {
                     this.isError = false;
                     input.classList.remove('border-red')
                 }
-                // } else {
-                //     input.focus();
-                // }
-                // }
                 this.$emit("bindingDataInput");
                 this.isEdit = false;
             }
         },
         computed: {
-
+            resource(){
+                return this.$store.state.resource;
+            }
         },
         methods: {
+            isFutureDate(date) {
+            const currentDate = new Date();
+            return date > currentDate;
+            },   
+            formatDateInput($event){
+                let dateInput = $event.target;
+                if(this.date) {
+                    let newDate = Format.formatDateInput(dateInput.value);
+                    dateInput.value = newDate;
+                }
+            },
             checkBlur() {
-                console.log(this.date)
                 let input = this.$refs.datePick.$el.querySelector('input')
                 if (this.date != null && this.date != "" && !Validation.checkValidDate(this.date)) {
                     this.isError = true;
-                    this.errorContent = this.name + " nhập sai định dạng";
                     input.classList.add('border-red')
                 } else {
                     this.isError = false;

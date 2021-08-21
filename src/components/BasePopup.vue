@@ -14,13 +14,13 @@
                         </div>
                     </div>
                 <div class="divide"></div>
-                <div class="popup-footer" :class="{ 'flex-center' : numberOfButton == 1}">
+                <div class="popup-footer" :class="{ 'flex-center' : numberOfButton == 1,'flex-end' : objectPopUp.type == 'warning-code'}" >
                     <div class="popup-footer-left" v-if="objectPopUp.buttonTexts[0] != ''">
                         <BaseButton @click="cancelButtonClick"  classList="m-btn-default m-second-btn" bgColor="#fff" textColor="#111111" :btnText="objectPopUp.buttonTexts[0]" />
                     </div>
                     <div class="popup-footer-right">
                         <BaseButton @click="subPrimaryButtonClick" v-if="objectPopUp.buttonTexts[1] != ''" classList="m-btn-default m-second-btn" bgColor="#fff" textColor="#111111" :btnText="objectPopUp.buttonTexts[1]" />
-                        <BaseButton :class="{'mr0' : numberOfButton == 1 }" @click="primaryButtonClick" classList="m-btn-default m-primary-btn" bgColor="rgb(44, 160, 28)" textColor="#ffffff" :btnText="objectPopUp.buttonTexts[2]" />
+                        <BaseButton :class="{'mr0' : numberOfButton == 1 }" @click="primaryButtonClick" classList="m-btn-default m-primary-btn" bgColor="rgb(44, 160, 28)" bgHoverColor="#35bf22" textColor="#ffffff" :btnText="objectPopUp.buttonTexts[2]" />
                     </div>
                 </div>
             </div>
@@ -33,7 +33,7 @@
 <script>
     import BaseButton from './BaseButton.vue'
     export default {
-        props: ['objectPopUp'],
+        props: [],
         components: {
             BaseButton
         },
@@ -76,9 +76,9 @@
              * Created by TBN (21/7/2021)
              */
             primaryButtonClick() {
-                if (this.objectPopUp.type == 'warning') {
+                if (this.objectPopUp.type == 'confirmation') {
                     this.$emit('storeInformation');
-                } else if (this.objectPopUp.type == 'error') {
+                } else if (this.objectPopUp.type == 'error' || this.objectPopUp.type == 'warning-code') {
                     this.$emit('focusErrorField', this.errorContents)
                 }else{
                     this.$emit('deleteData');
@@ -91,7 +91,7 @@
              * Created By TBN (18/8/2021)
              */
             subPrimaryButtonClick(){
-                if(this.objectPopUp.type == 'warning'){
+                if(this.objectPopUp.type == 'confirmation'){
                     this.$emit('hideForm');
                 }
             },
@@ -112,6 +112,10 @@
             }
         },
         computed:{
+            
+            objectPopUp(){
+                return this.$store.state.data.objectPopUp;
+            },
             numberOfButton(){
                 return this.objectPopUp.buttonTexts.filter(btnText => btnText != "").length;
             }
@@ -122,6 +126,10 @@
 <style scoped>
     .flex-center{
         justify-content: center !important;
+        align-content: center !important;
+    }
+    .flex-end{
+        justify-content: flex-end !important;
         align-content: center !important;
     }
 </style>

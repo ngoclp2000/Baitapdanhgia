@@ -73,11 +73,14 @@
     padding-top: 12px;
 }
 .popup .popup-content .content-popup .confirmation{
-    background: url('../../../assets/icon/icon-sprites.svg') no-repeat -592px -456px;
+    background: url('../../../assets/icon/icon-sprites.svg') no-repeat -826px -456px;
 } 
 .popup .popup-content .content-popup .warning{
-    background: url('../../../assets/icon/icon-sprites.svg') no-repeat -826px -456px;
+    background: url('../../../assets/icon/icon-sprites.svg') no-repeat -592px -456px;
 } 
 .popup .popup-content .content-popup .error{
     background: url('../../../assets/icon/icon-sprites.svg') no-repeat -24px -954px;
+}
+.popup .popup-content .content-popup .warning-code{
+    background: url('../../../assets/icon/icon-sprites.svg') no-repeat -592px -456px;
 }

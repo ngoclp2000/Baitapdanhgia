@@ -9,33 +9,34 @@
                 :typeDataPaging="type +'/trang'" @updateContent="updatePageSize" isDisabledInput="1"
                 :isReadyData="isReady" :class="{'waiting': isChangeBorderCbo}" />
             <div class="paging paging-center">
-                <BaseButton :isReadyData="isReady" @click="goToPreviousPage" class="large" classList="btn-text large"
-                    btnText="Trước" alt="" />
+                <BaseButton :isReadyData="isReady" @click="goToPreviousPage" class="large"
+                    :classList="'btn-text large ' + (currentPage == 1 ? 'disable' : '')"  :disable="currentPage==1" btnText="Trước" alt="" />
                 <BaseButton :isReadyData="isReady" @click="goToPageNumber(pages[0])"
                     :classList="this.currentPage == pages[0] ? 'btn-text active-option' : 'btn-text'"
                     :btnText="pages[0].toString()" alt="" />
-                <div v-if="!toggleThreeDot || isBothDisplayThreeDots" @click="threeDotsFirstClick"
-                    class="three-dot three-dot-first">
+                <div v-if="(!toggleThreeDot || isBothDisplayThreeDots) && maxPageNumber >= 4"
+                    @click="threeDotsFirstClick" class="three-dot three-dot-first">
                     ...
                 </div>
-                <BaseButton :isReadyData="isReady" @click="goToPageNumber(pages[1])"
+                <BaseButton v-if="maxPageNumber >= 2" :isReadyData="isReady" @click="goToPageNumber(pages[1])"
                     :classList="this.currentPage == pages[1] ? 'btn-text active-option' : 'btn-text'"
                     :btnText="pages[1].toString()" alt="" />
-                <BaseButton :isReadyData="isReady" @click="goToPageNumber(pages[2])"
+                <BaseButton v-if="maxPageNumber >= 3" :isReadyData="isReady" @click="goToPageNumber(pages[2])"
                     :classList="this.currentPage == pages[2] ? 'btn-text active-option' : 'btn-text'"
                     :btnText="pages[2].toString()" alt="" />
                 <BaseButton :isReadyData="isReady" v-if="this.isBothDisplayThreeDots" @click="goToPageNumber(pages[3])"
                     :classList="this.currentPage == pages[3] ? 'btn-text active-option' : 'btn-text'"
                     :btnText="pages[3].toString()" alt="" />
-                <div v-if="toggleThreeDot || isBothDisplayThreeDots" @click="threeDotsLastClick"
+                <div v-if="(toggleThreeDot || isBothDisplayThreeDots) && maxPageNumber >= 4" @click="threeDotsLastClick"
                     class="three-dot three-dot-last">
                     ...
                 </div>
-                <BaseButton :isReadyData="isReady" @click="goToPageNumber(maxPageNumber)" v-if="maxPageNumber > 4"
+                <BaseButton :isReadyData="isReady" @click="goToPageNumber(maxPageNumber)" v-if="maxPageNumber >= 4"
                     :classList="this.currentPage == maxPageNumber ? 'btn-text active-option' : 'btn-text'"
                     :btnText="maxPageNumber.toString()" alt="" />
-                <BaseButton :isReadyData="isReady" @click="goToNextPage" class="large" classList="btn-text large"
-                    btnText="Sau" alt="" />
+                <BaseButton :isReadyData="isReady" @click="goToNextPage" class="large" btnText="Sau" alt="" 
+                    :classList="'btn-text large ' + (currentPage == maxPageNumber ? 'disable' : '')"  :disable="currentPage==maxPageNumber"
+                   />
             </div>
         </div>
     </div>
@@ -67,10 +68,10 @@
             currentPage() {
                 let checkIndex = this.extractIndex(this.currentPage);
                 this.currentIndex = (checkIndex != undefined ? checkIndex : this.currentIndex)
-                if(this.currentPage >= 4 && this.currentPage < this.maxPageNumber - 2){
+                if (this.currentPage >= 4 && this.currentPage < this.maxPageNumber - 2) {
                     console.log("Hi");
                     this.isBothDisplayThreeDots = true;
-                }else{
+                } else {
                     this.isBothDisplayThreeDots = false;
                 }
             }
@@ -137,15 +138,17 @@
                     }
                     this.$store.dispatch('createToast', payloadToast)
                 } else {
-                    if (this.currentPage == this.pages[0]) {
+                    if (this.currentPage == this.pages[1]) {
                         // Nếu ở trang đầu tiên trong dãy 4 số paging bar
                         if (this.currentPage <= 4) {
                             this.pages = [1, 2, 3, 4] // Chuyển dãy 4 số về ban đầu
+                            this.toggleThreeDot = true;
                         } else {
                             // Trừ dãy số paging bar thêm số lần tùy thuộc số trang lớn nhất
                             let subtratAmount = (this.maxPageNumber > 4 ? 3 : 4);
                             this.pages.forEach((element, index) => this.pages[index] = element -
                                 subtratAmount)
+                            this.pages[0] = 1;
                         }
                     } else {
                         let shiftAmount = (this.maxPageNumber > 4 ? 3 : 4);
@@ -156,29 +159,38 @@
                                     if (this.currentPage - 1 < shiftAmount) {
                                         this.pages = [1, 2, 3, 4];
                                     } else {
-                                        this.pages = [1,this.currentPage - 3, this.currentPage - 2, this
+                                        this.pages = [1, this.currentPage - 3, this.currentPage - 2, this
                                             .currentPage -
-                                            1];
+                                            1
+                                        ];
                                     }
                                     break;
                                 case 2:
-                                    this.pages = [1,this.currentPage - 1, this.currentPage, this.currentPage +
-                                        1];
+                                    this.pages = [1, this.currentPage - 1, this.currentPage, this.currentPage +
+                                        1
+                                    ];
                                     break;
                                 case 3:
-                                    this.pages = [1,this.currentPage - 2, this.currentPage - 1, this
-                                        .currentPage];
+                                    this.pages = [1, this.currentPage - 2, this.currentPage - 1, this
+                                        .currentPage
+                                    ];
                                     break;
                             }
                             this.toggleThreeDot = true;
                         } else {
-                            if (this.currentIndex == 1) {
-                                this.pages = [1,this.currentPage - 3, this.currentPage - 2, this.currentPage - 1];
-                                this.toggleThreeDot = true;
-                            } else {
-                                this.pages = [1, this.maxPageNumber - 2, this.maxPageNumber - 1, this
-                                .maxPageNumber];
-                                this.toggleThreeDot = false;
+                            if (this.maxPageNumber >= 4) {
+                                if (this.currentIndex == 1) {
+                                    console.log("Hihihi")
+                                    this.pages = [1, this.currentPage - 3, this.currentPage - 2, this.currentPage -
+                                        1
+                                    ];
+                                    this.toggleThreeDot = true;
+                                } else {
+                                    this.pages = [1, this.maxPageNumber - 2, this.maxPageNumber - 1, this
+                                        .maxPageNumber
+                                    ];
+                                    this.toggleThreeDot = false;
+                                }
                             }
                         }
                     }
@@ -209,11 +221,13 @@
                 } else {
                     // Kiểm tra xem có click chọn trang đầu hoặc trang cuối không
                     // Nếu có thì sẽ render lại paging bar
-                    if(number == this.maxPageNumber){
-                        this.pages = [1,this.maxPageNumber-2,this.maxPageNumber-1,this.maxPageNumber];
-                        this.toggleThreeDot = false;
-                    }else if(number == 1){
-                        this.pages = [1,2,3,4];
+                    if (number == this.maxPageNumber) {
+                        if (this.maxPageNumber >= 4) {
+                            this.pages = [1, this.maxPageNumber - 2, this.maxPageNumber - 1, this.maxPageNumber];
+                            this.toggleThreeDot = false;
+                        }
+                    } else if (number == 1) {
+                        this.pages = [1, 2, 3, 4];
                         this.toggleThreeDot = true;
                     }
                     // Chuyển đến trang được click
@@ -226,7 +240,6 @@
              * Created by TBN (21/7/2021)
              */
             async goToNextPage() {
-
                 // Kiểm tra xem có phải ở trang cuối không
                 if (this.currentPage == this.maxPageNumber) {
                     // Nếu ở trang cuối thì thông báo bằng toast message
@@ -244,20 +257,26 @@
                     this.$store.dispatch('createToast', payloadToast)
                 } else {
                     let shiftAmount = (this.maxPageNumber > 4 ? 3 : 4);
-                    if (this.currentPage + shiftAmount < this.maxPageNumber) {
+                    if (this.currentPage + shiftAmount < this.maxPageNumber && this.maxPageNumber >= 4) {
+
                         switch (this.currentIndex) {
                             case 1:
-                                this.pages = [1,this.currentPage, this.currentPage + 1, this.currentPage +
+                                this.pages = [1, this.currentPage, this.currentPage + 1, this.currentPage +
                                     2
                                 ]
                                 break;
                             case 2:
-                                this.pages = [1,this.currentPage - 1, this.currentPage, this.currentPage +
+                                this.pages = [1, this.currentPage - 1, this.currentPage, this.currentPage +
                                     1
                                 ]
+                                if (this.currentPage < 4) {
+                                    this.pages = [1, this.currentPage + 1, this.currentPage + 2, this.currentPage +
+                                        3
+                                    ]
+                                }
                                 break;
                             case 3:
-                                this.pages = [1,this.currentPage + 1, this.currentPage + 2, this
+                                this.pages = [1, this.currentPage + 1, this.currentPage + 2, this
                                     .currentPage +
                                     3
                                 ]
@@ -265,8 +284,10 @@
                         }
                         this.toggleThreeDot = true;
                     } else {
-                        this.pages = [1, this.maxPageNumber - 2, this.maxPageNumber - 1, this.maxPageNumber];
-                        this.toggleThreeDot = false;
+                        if (this.maxPageNumber >= 4) {
+                            this.pages = [1, this.maxPageNumber - 2, this.maxPageNumber - 1, this.maxPageNumber];
+                            this.toggleThreeDot = false;
+                        }
                     }
                     this.$emit("updatePagination", this.currentPage) // Emit sự kiện cập nhật trang dữ liệu
                     this.currentPage += 1 // Thay đổi trang hiện tại
@@ -345,6 +366,8 @@
     .waiting {
         border-color: rgb(44, 160, 28) !important;
     }
+
+    
 
     .three-dot {
         cursor: pointer;

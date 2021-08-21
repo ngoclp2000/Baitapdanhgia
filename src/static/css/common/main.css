@@ -101,10 +101,11 @@ body {
 .show {
     display: inline-block !important;
 }
-
+.disable {
+    color: #9e9e9e !important;
+}
 .show-flex {
-    display: flex !important;
-    width: 100%;
+    display: flex;
 }
 
 button {
@@ -196,7 +197,7 @@ input[type="checkbox"]:checked:before {
     background-color: #04b474;
 }
 
-.bg-selected {
+.bg-selected > .main-td{
     background-color: #f8f8f8 !important;
 }
 
@@ -317,7 +318,7 @@ input[type="checkbox"]:checked:before {
 }
 
 .w1p4{
-    width: 23.5% !important;
+    width: 24.3% !important;
 }
 
 .pr26 {

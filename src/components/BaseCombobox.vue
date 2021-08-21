@@ -2,12 +2,13 @@
     <div v-click-outside="closeDropdown">
         <BaseInput :tabindex="tabindex" @showDropdown="isShow = true" @updateInput="updateInput"
             @filterOption="filterOption" @evtKeyboardChoosingOption="evtKeyboardChoosingOption"
-            @resetOption="resetOptions" ref="input" classList="combobox user-input" @tabPress="tabPress"
-            iconClass="combobox-icon" type="text" errorContent="Không có dữ liệu đã nhập" refType=" "
-            :name="name" :contentPlHolder="contentPlHolder" validType="combobox" :isDisabled="isDisabledInput"
-            :isReadyData="isReadyData"/>
+            @resetOption="resetOptions" ref="inputCombobox" classList="combobox user-input" @tabPress="tabPress"
+            iconClass="combobox-icon" type="text" errorContent="Không có dữ liệu đã nhập" 
+            :name="name" :contentPlHolder="contentPlHolder" :validType="validType != null ? validType : 'combobox'" :isDisabled="isDisabledInput"
+            :isReadyData="isReadyData" :noneCheck="noneCheck"
+            />
         <!-- <div class="type-data-paging" style="display: none">{{typeDataPaging}}</div> -->
-        <div ref="select" style="z-index:3" v-show="isShow" class="select-custom" :class="directionDrop">
+        <div ref="select" style="z-index:3" v-show="isShow && data.length > 0" class="select-custom" :class="directionDrop">
             <div v-for="(option,index) in data" :key="index" @click="evtMouseChoosingOption(option['content'])"
                 class="option" :class="[option.isPointed ? 'point-option' : '',option.isChosen ?'show-select': '']">
                 <!-- <div class="option-icon"><img :class="[ option.isChosen ?'show-image': '']"
@@ -29,8 +30,8 @@
     } from 'vuex'
     import BaseInput from "./BaseInput.vue"
     export default {
-        props: ['typeDataPaging','contentPlHolder','type','dataType','isDisabledInput','errorContent'
-        ,'isSearching','tabindex','directionDrop','validType','name','isReadyData'],
+        props: ['contentPlHolder','type','dataType','isDisabledInput','errorContent'
+        ,'isSearching','tabindex','directionDrop','validType','name','isReadyData','noneCheck'],
         async created() {
         },
         async mounted() {
@@ -45,10 +46,10 @@
                         this.$refs.select.style.top =  "-175px";
                     }
                 }
-            }
-        },
-        updated() {
-
+            },
+            isError(){
+                this.$refs.inputCombobox.isError = true;
+            },
         },
         data() {
             return {
@@ -57,9 +58,11 @@
                 isShow: false,
                 firstTime: true,
                 chosenContent: "",
+                errorContentData: "",
                 firstTimeDropDown: true,
                 inputContent: "",
-                indexPointedOption: 0
+                indexPointedOption: 0,
+                isError: false,
             }
         },
         components: {
@@ -71,11 +74,9 @@
              * Created by TBN (27/7/2021)
              */
             setData(data,isInitail) {
-
                 if (this.data.length == 0) {
                     this.data = [].concat(data);
                 } else {
-                    
                     this.data = this.data.concat(data)
                 }
                 this.intialData = this.data;
@@ -89,16 +90,16 @@
              */
             tabPress() {
                 this.isShow = false; // Ẩn combobox
-                this.$refs.input.active = false; // Xóa border xanh
+                this.$refs.inputCombobox.active = false; // Xóa border xanh
             },
             /**
              * Cập nhật nội dung input
              * Created by TBN (22/7/2021)
              */
             updateInput(input) {
-                this.inputContent = input
+                this.inputContent = input;
                 // Chuyển trạng thái của option đươc chọn
-                this.$emit('bindingDataInput')
+                this.$emit('bindingDataInput');
             },
             /**
              * Nhận sự kiên Enter, Mũi tên lên xuống tại input của combobox
@@ -197,7 +198,7 @@
                     obj = element
                     if (obj.content == selectedOption) {
                         obj.isChosen = true
-                        this.$refs.input.setInputContent(obj.content);
+                        this.$refs.inputCombobox.setInputContent(obj.content);
                     } else {
                         obj.isChosen = false
                     }
@@ -230,14 +231,15 @@
              * Created  By TBN
              */
             removeXIcon() {
-                this.$refs.input.removeXIcon()
+                this.$refs.inputCombobox.removeXIcon()
             },
             /**
              * Khởi tạo nội dung của input mới cần được thực hiện tại component BaseInput
              * Created by TBN (22/7/2021)
              */
             init(data) {
-                this.$refs.input.init(data)
+                this.isChange = false;
+                this.$refs.inputCombobox.init(data)
             },
             /**
              * Chuyển trạng thái được chọn của các option về false
@@ -259,10 +261,10 @@
             toggleDropdown() {
                 this.isShow = !this.isShow;
                 if (this.isShow) {
-                    this.$refs.input.active = true
+                    this.$refs.inputCombobox.active = true
                 }
                 // Focus vào input
-                this.$refs.input.$refs.input.focus();
+                this.$refs.inputCombobox.$refs.input.focus();
                 this.resetPointedOption()
             },
             /**
@@ -273,7 +275,8 @@
                 if (this.isShow) {
                     this.isShow = false;
                 }
-                this.$refs.input.active = false;
+                if(this.$refs.inputCombobox)
+                    this.$refs.inputCombobox.active = false;
             },
             /**
              * Lọc option theo nội dung người dùng nhập
@@ -293,16 +296,18 @@
                 
                 // Nếu không có dữ liệu sẽ hiển thị lỗi
                 if (this.data.length == 0) {
-                    this.$refs.input.errorContentData = "Dữ liệu <" + this.name + "> không có trong danh mục";
-                    this.$refs.input.isError = true;
+                    this.$refs.inputCombobox.errorContentData = this.dictionaryError[this.name].noOption;
+                    this.$refs.inputCombobox.isError = true;
                 } else {
-                    this.$refs.input.isError = false;
+                    this.$refs.inputCombobox.isError = false;
                 }
             },
             ...mapActions(['getDepartmentData', 'getPositionData'])
         },
         computed: {
-
+            dictionaryError(){
+                return this.$store.state.resource[this.$browserLocale]['management']['entity']['Employee']['dictionaryError'];
+            }
         }
     }
 </script>

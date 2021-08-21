@@ -17,10 +17,17 @@
         width: 24px !important;
         height: 24px !important;
     }
+    .filter-bar .filter-right .refesh-icon:hover{
+        background-position: -1097px -88px !important;
+    }
         .filter-bar .filter-right input{
             height: 32px !important;
             border-radius: 2px;
             border: 1px solid #babec5;
+            width: 300px;
+            padding-right: 45px;
+        }
+        .filter-bar .filter-right input::placeholder{
             font-family: Notosans-Italic;
         }
         .filter-bar .filter-right .x-icon{

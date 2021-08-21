@@ -6,7 +6,6 @@
     width: 900px;
     max-height: 585px;
     background-color: #ffffff;
-    animation: appear .5s ease-in-out;
     overflow: auto;
 }
 .expand-content{

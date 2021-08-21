@@ -30,10 +30,22 @@ table th{
 }
 table .main-td{
     padding: 5px 10px 5px 10px;
+}
+table td:not(:nth-last-of-type(4)){
     border-right: 1px dotted #c7c7c7;
 }
-table .main-td:nth-last-of-type(2){
-    border-right: none !important;
+table td:nth-last-of-type(3){
+    border-left: 1px dotted #c7c7c7;
+}
+table thead th:nth-of-type(3){
+    position: sticky;
+    left: 56px;
+    z-index: 2;
+}
+table tbody td:nth-of-type(3){
+    position: sticky;
+    left: 56px;
+    z-index: 1;
 }
 table .main-td .checkbox-custom:checked+.checkbox-custom-label:after{
     top: 3px !important;
@@ -46,8 +58,11 @@ table th{
     position: sticky;
     top: 0;
 }
-table .main-th{
+table thead th:not(:nth-last-of-type(4)){
     border-right: 1px solid #c7c7c7;
+}
+table thead th:nth-last-of-type(3){
+    border-left: 1px solid #c7c7c7;
 }
 tr:hover > .main-td:not(:first-of-type){
     background-color: #f3f8f8 !important;
@@ -58,6 +73,7 @@ tr:hover > .main-td:not(:first-of-type){
     max-width: 16px;
     width: 16px;
     background: #fff !important;
+    border: none !important;
     position: sticky;
     left: 0;
     border: 0;
@@ -67,7 +83,7 @@ tr:hover > .main-td:not(:first-of-type){
 .white-30{
     min-width: 30px;
     position: sticky;
-    border: none;
+    border: none !important;
     background: #ffffff !important;
     width: 30px;
     max-width: 30px;
@@ -77,7 +93,7 @@ tr:hover > .main-td:not(:first-of-type){
 .grey-30{
     min-width: 30px;
     position: sticky;
-    border: none;
+    border: none !important;
     background: #f8f8f8 !important;
     width: 30px;
     max-width: 30px;

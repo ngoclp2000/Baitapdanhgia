@@ -46,7 +46,10 @@
 .vdpRow{
     height: 32px !important;
 }
-.vdpComponent.vdpWithInput input{
+/* .vdpComponent.vdpWithInput input{
+    font-family: Notosans-Italic !important;
+} */
+.vdpComponent.vdpWithInput input::placeholder{
     font-family: Notosans-Italic !important;
 }
 @font-face {

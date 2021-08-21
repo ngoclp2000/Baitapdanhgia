@@ -3,8 +3,12 @@ import App from './App.vue'
 import store from './store'
 import VueRouter from 'vue-router'
 import {routes} from './router/index.js'
-
-Vue.config.productionTip = true
+import VTooltip from 'v-tooltip'
+import Skeleton from 'vue-loading-skeleton';
+import Common from './store/common'
+Vue.use(Skeleton);
+Vue.use(VTooltip);
+Vue.config.productionTip = true;
 
 
 const router = new VueRouter({
@@ -44,6 +48,19 @@ Vue.directive("click-outside", {
   },
 });
 
+// Kiểm tra xem đã có hàm format của string chưa
+if (!String.prototype.format) {
+  String.prototype.format = function() {
+    var args = arguments;
+    return this.replace(/{(\d+)}/g, function(match, number) { 
+      return typeof args[number] != 'undefined'
+        ? args[number]
+        : match
+      ;
+    });
+  };
+}
+Vue.prototype.$browserLocale =  Common.convertBrowserLocale(window.navigator.userLanguage || window.navigator.language);
 new Vue({
   render: h => h(App),
   router,

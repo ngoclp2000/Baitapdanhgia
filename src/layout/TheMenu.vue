@@ -27,7 +27,9 @@
             }
         },
         created() {
-            this.$store.commit('TOGGLE_ITEM_ACTIVE',localStorage.getItem("active"))
+            if(sessionStorage.getItem("active") != null) {
+                this.$store.commit('TOGGLE_ITEM_ACTIVE',sessionStorage.getItem("active"))
+            }
         },
         mounted() {
             if(window.innerWidth <= 1024){

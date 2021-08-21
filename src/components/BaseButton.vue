@@ -1,10 +1,10 @@
 /<template>
   <div class="m-btn-container">
-      <button :disabled="isReadyData != null && !isReadyData"  :tabindex="tabindex"   @click="$emit('click')" :id="id" :class="[classList]" :style="{backgroundImage: (hasIcon ? 'url(' + require('@/assets/icon/'+urlIcon) + ')': '')
+      <button :disabled="(isReadyData != null && !isReadyData) || disable"  :tabindex="tabindex"   @click="$emit('click')" :id="id" :class="[classList]" :style="{backgroundImage: (hasIcon ? 'url(' + require('@/assets/icon/'+urlIcon) + ')': '')
       ,
-      backgroundColor : bgColor,
+      backgroundColor : (isHover ? bgHoverColor : bgColor),
       color : textColor,
-      }" >
+      }" @mouseover="isHover = true" @mouseleave="isHover = false">
             <div class="btn-name">{{btnText}}</div>
       </button>
   </div>
@@ -13,10 +13,10 @@
 
 <script>
 export default {
-    props: ['hasIcon', 'urlIcon','bgColor','classList','btnText','id','textColor','tabindex','isReadyData'],
+    props: ['hasIcon', 'urlIcon','bgColor','classList','disable','btnText','id','textColor','tabindex','isReadyData','bgHoverColor'],
     data(){
         return{
-            
+            isHover: false,
         }
     }
 }

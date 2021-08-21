@@ -18,19 +18,21 @@
                 <th class="main-th" v-for="(th,index) in ths"
                     :style="{textAlign: th.textAlign || 'left', width: th.colWidth || '150px'}" :key="index">
                     {{th.value}}
-                    <!-- <i class="fas fa-sort icon-input" style="color: #bbbbbb; margin-left: 8px; margin-right: 10px; cursor: pointer;" @click="sortDataByField(th.fieldName,index,th.type)"></i> -->
+                    <i class="fas fa-sort icon-input"
+                        style="color: #bbbbbb; margin-left: 8px; margin-right: 10px; cursor: pointer;"
+                        @click="sortDataByField(th.fieldName,index,th.type)"></i>
                 </th>
                 <th
                     style="width: 120px;  min-width: 120px; text-align: center; z-index: 3; position: sticky; right: 60px;">
-                    CHỨC
-                    NĂNG</th>
+                    {{resource[this.$browserLocale]['management']['entity']['Employee']['tableFieldName']['sub'].value}}
+                </th>
                 <th class="white-30" style="position: sticky; right: 30px;"></th>
                 <th class="grey-30" style="position: sticky; right: 0px;"></th>
             </tr>
         </thead>
         <tbody>
-            <tr :class="{'bg-selected': checkedList[index]}" v-for="(data,index) in dataTable"
-                @dblclick="dbClickRow(data,$event)" :key="index">
+            <tr @dblclick="dbClickRow(data,$event)" :class="{'bg-selected': checkedList[index]}"
+                v-for="(data,index) in dataTable" :key="index">
                 <td class="white-16"></td>
                 <td style="width: 40px; min-width: 40px; max-width: 40px;position: sticky; left:16px; z-index:2; background-color: #fff;"
                     class="main-td" :class="{'bg-selected': checkedList[index]}">
@@ -41,7 +43,7 @@
                             :class="{'active-checkbox':checkedList[index]}"></label>
                     </div>
                 </td>
-                <td class="main-td" :fieldName="th.fieldName" v-for="(th,index1) in informationThead" :key="index1"
+                <td class="main-td" :fieldName="th.fieldName" v-for="(th,index1) in ths" :key="index1"
                     :style="{textAlign: th.textAlign || 'left',width: th.colWidth || '150px'}">
                     {{getDataTable(data,th.fieldName)}}
                 </td>
@@ -54,7 +56,7 @@
                         </div>
                         <div class="function-dropdown">
                             <div class="dropdown-container" :class="{'outline-blue': displayFunctionList[index]}">
-                                <div class="dropdown" @click="toggleFunction(index,$event)" @blur="hideAllFunction">
+                                <div class="dropdown" @click="toggleFunction(index,$event)">
 
                                 </div>
                             </div>
@@ -63,12 +65,10 @@
                 </td>
                 <td class="white-30" style="position: sticky; right: 30px;"></td>
                 <td class="grey-30" style="position: sticky; right: 0px;"></td>
-                <ul class="dropdown-content" v-show="displayFunctionList[index]">
-                    <li @click="duplicateEntity(data,index)">
-                        Nhân bản
-                    </li>
-                    <li @click="deleteEntity(data,index)">
-                        Xóa
+                <ul class="dropdown-content" v-if="displayFunctionList[index]">
+                    <li v-for="(element,index) in functionList" :key="index"
+                        @click="functionElementClick(data,index,element.key)">
+                        {{element.value}}
                     </li>
                 </ul>
             </tr>
@@ -84,6 +84,22 @@
         async created() {
 
         },
+        mounted() {
+            // Sự kiện ẩn tất cả contextMenu khi click ra ngoài
+            window.addEventListener('click', (event) => {
+                let dropdown = document.querySelector('.function .function-dropdown .dropdown');
+                let dropdownContent = document.querySelector('.dropdown-content');
+                if (dropdownContent != null && dropdown != null && !dropdown.contains(event.target)) {
+                    let length = this.displayFunctionList.length;
+                    for (let i = 0; i < length; i++) {
+                        this.$set(this.displayFunctionList, i, false)
+                    }
+                }
+            })
+        },
+        destroy() {
+            window.removeEventListener('click');
+        },
         props: ['ths', 'type'],
         data() {
             return {
@@ -91,25 +107,34 @@
                 checkedList: [],
                 sortDirectionList: [],
                 displayFunctionList: [],
+                isReady: false,
             }
         },
         components: {
 
         },
         computed: {
-            informationThead() {
-                return this.ths.filter(th => th.fieldName != "Edit")
+            resource() {
+                return this.$store.state.resource;
+            },
+            functionList() {
+                return this.resource[this.$browserLocale]['management']['entity']['Employee']['tableFieldName']['sub']
+                    .functionList;
             }
         },
         methods: {
             /**
-             * Ẩn tất cả function context menu
-             * Created By TBN (18/8/2021)
+             *  Hàm chức năng của lựa chọn của phần context menu chức năng
+             *  Created by TBN (21/8/2021)
              */
-            hideAllFunction() {
-                let length = this.displayFunctionList.length;
-                for (let i = 0; i < length; i++) {
-                    this.$set(this.displayFunctionList, i, !this.displayFunctionList[i])
+            functionElementClick(data, index, key) {
+                switch (key) {
+                    case 'duplicate':
+                        this.duplicateEntity(data, index);
+                        break;
+                    case 'delete':
+                        this.deleteEntity(data, index);
+                        break;
                 }
             },
             /**
@@ -130,10 +155,10 @@
                 this.$emit('displayFormEdit', data, true);
             },
             /**
-             * Ẩn/Hiện dropdown function 
-             * Created By TBN (17/8/2021)
+             * Hàm ẩn hiện contextMenu
+             * Created By TBN(21/8/2021)
              */
-            toggleFunction(index, $event) {
+            async displayContextByIndex(index) {
                 let length = this.displayFunctionList.length;
                 for (let i = 0; i < length; i++) {
                     if (i == index) {
@@ -142,15 +167,24 @@
                         this.$set(this.displayFunctionList, i, false)
                     }
                 }
-                let root = $event.target.getBoundingClientRect()
-                let positionX = root.x - 90; // Vị trí x con trỏ theo screenview
-                let positionY = root.y + 20; // Vị trí y con trỏ theo clientview
-                let dropdown = $event.target.parentElement.parentElement.parentElement.parentElement.parentElement
-                    .querySelector(
-                        '.dropdown-content');
-                console.log()
-                dropdown.style.top = positionY + "px";
-                dropdown.style.left = positionX + "px";
+            },
+            /**
+             * Ẩn/Hiện dropdown function 
+             * Created By TBN (17/8/2021)
+             */
+            async toggleFunction(index, $event) {
+                await this.displayContextByIndex(index);
+                if (this.displayFunctionList[index]) {
+                    let root = $event.target.getBoundingClientRect()
+                    let positionX = root.x - 90; // Vị trí x con trỏ theo screenview
+                    let positionY = root.y + 20; // Vị trí y con trỏ theo clientview
+                    let dropdown = $event.target.parentElement.parentElement.parentElement.parentElement
+                        .parentElement
+                        .querySelector(
+                            '.dropdown-content');
+                    dropdown.style.top = positionY + "px";
+                    dropdown.style.left = positionX + "px";
+                }
             },
             /**
              * Hàm lựa chọn tất cả record
@@ -216,7 +250,7 @@
              * Created By TBN (25/7/2021)
              */
             dbClickRow(data, $event) {
-                if ($event.target.nodeName == "LABEL" || $event.target.nodeName == "DIV")
+                if (!$event.target.classList.contains('main-td'))
                     return;
                 this.$emit('displayFormEdit', data)
             },
@@ -255,6 +289,15 @@
 </script>
 
 <style scoped>
+    .th-last {
+        width: 120px;
+        min-width: 120px;
+        text-align: center;
+        z-index: 3;
+        position: sticky;
+        right: 60px;
+    }
+
     /* Css cho chức năng của row */
     .function {
         display: flex;
@@ -297,7 +340,7 @@
         position: fixed;
         width: 117px;
         transition: all .2s ease;
-        z-index: 9990;
+        z-index: 3;
         background-color: #fff;
         border: 1px solid #babec5;
     }

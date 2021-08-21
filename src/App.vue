@@ -29,6 +29,9 @@ export default {
     TheMenu,
     TheHeader,
     BaseToastMessage,
+  },
+  destroyed(){
+    
   }
 }
 </script>

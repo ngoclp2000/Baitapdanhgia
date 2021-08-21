@@ -71,7 +71,7 @@ class Validation {
         var month = _date.getMonth() + 1;
         var year = _date.getFullYear();
         // Kiểm tra năm và tháng
-        if (year < 1000 || year > 3000 || month <= 0 || month > 12)
+        if (year < 1000 || year > 9999 || month <= 0 || month > 12)
             return false;
 
         var monthLength = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
