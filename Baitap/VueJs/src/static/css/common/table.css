@@ -1,0 +1,56 @@
+.grid {
+    margin: 0px 16px;
+    margin-top: 16px;
+    height: calc(100vh - 230px);
+    overflow: auto;
+    position: relative;
+}
+.grid::-webkit-scrollbar-track{
+    margin-top: 48px;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+table th,td{
+    border-bottom: 1px solid #bbbbbb;
+    text-align: left;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    box-sizing: border-box;
+    overflow: hidden;
+    min-width: 0px;
+}
+table th:not(:first-of-type){
+    padding-right: 20px;
+}
+table td:not(:first-of-type){
+    padding-right: 20px;
+}
+table tr{
+    height: 48px;
+    box-sizing: border-box;
+}
+table tr:nth-child(odd){
+    background-color: #e9ebee;
+}
+table th{
+    position: sticky;
+    top: 0;
+    background-color: #ffffff;
+    z-index: 2;
+}
+tr:hover{
+    background-color: #bbbbbb !important;
+}
+.edit-icon,.delete-icon{
+    align-self: center;
+    width: 20px;
+    height: 20px;
+    margin-left: 5px;
+    cursor: pointer;
+}
+.employee-table .count-col{
+    width: 4% !important;
+}

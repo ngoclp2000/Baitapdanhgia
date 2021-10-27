@@ -1,0 +1,49 @@
+﻿.header {
+    float: left;
+    width: calc( 100% - 221px);
+    height: 48px;
+    position: relative;
+    border-bottom: 1px solid #e5e5e5;
+}
+@font-face {
+    font-family: 'GoogleSans-Bold';
+    src: url('../../font/GoogleSans-Bold.otf') format('opentype');
+}
+    .header .cbo{
+        position: absolute;
+        top: 3.5px;
+        left: 16px;
+    }
+    .header .cbo  .combobox {
+       box-sizing: border-box;
+    }
+    .header .cbo .select-custom .option{
+        width: 250px !important;
+        box-sizing: border-box;
+    }
+    .header .account-info{
+        display: flex;
+        float : right;
+        justify-content: center;
+        align-items: center;
+    }
+        .header .account-info .account-avatar {
+            background: url('../../../assets/icon/avatar-default.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            width: 30px;
+            height: 30px;
+            margin-right: 16px;
+        }
+        .header .account-info .account-name {
+            height: 48px;
+            line-height: 48px;
+        }
+        .header .account-info .account-option {
+            background: url('../../../assets/icon/option.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            width: 20px;
+            height: 20px;
+            margin: 14px 16px;
+        }

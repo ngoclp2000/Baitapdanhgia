@@ -1,0 +1,35 @@
+<template>
+  <div id="app">
+    <TheMenu />
+    <TheHeader/>
+    <router-view/>
+    <BaseToastMessage/>
+  </div>
+</template>
+
+<script>
+import TheMenu from './layout/TheMenu.vue'
+import TheHeader from './layout/TheHeader.vue'
+import BaseToastMessage from './components/BaseToastMessage.vue'
+export default {
+  created(){
+    //this.$store.commit('TOGGLE_ITEM_ACTIVE',sessionStorage.getItem('active'))
+  },
+  name: 'App',
+  data(){
+    return{
+      
+    }
+  }
+  ,
+  components: {
+    TheMenu,
+    TheHeader,
+    BaseToastMessage
+  }
+}
+</script>
+
+<style>
+  @import url("./static/css/common/main.css");
+</style>

@@ -1,0 +1,11 @@
+@media  screen and (max-width: 1366px){
+    .m-btn-close{
+        right: 33px !important;
+    }
+}
+@media screen and (max-width: 1024px){
+    .input-search{
+        width: 250px !important;
+    }
+    
+}

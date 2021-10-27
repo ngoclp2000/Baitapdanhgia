@@ -1,0 +1,193 @@
+.customer-detail{
+    display: block;
+    border-radius: 5px;
+    max-width: 900px;
+    max-height: 650px;
+    background-color: #ffffff;
+    animation: appear .5s ease-in-out;
+    overflow: auto;
+}
+.close-button{
+    width: 20px;
+    height: 20px;
+    padding: 10px;
+    position: absolute;
+    right: 0px;
+    top: 0px;
+}
+    .customer-detail .close-button:hover{
+        background-color: #e5e5e5;
+    }
+    .customer-detail .title{
+        padding: 24px 24px;
+        padding-bottom: 0px;
+        font-family: GoogleSans-Bold;
+        font-size: 20px;
+    }
+    .customer-detail .customer-detail-content{
+        margin-bottom: 10px;
+    }
+    
+    .customer-detail .customer-detail-content .upper-part{
+        display: flex;
+        margin: 16px 20px 0px 24px;
+    }
+    .customer-detail .customer-detail-content .bottom-part{
+        display: flex;
+        margin: 16px 20px 0px 24px;
+    }
+    .customer-detail .customer-detail-content .upper-part .general-information{
+        margin-left: 16px;
+        width: 100%;
+    }
+
+        .customer-detail .customer-detail-content .image-upload {
+            display: inline-block;
+            padding-left: 0px;
+            padding-top: 7px;
+        }
+            .customer-detail .customer-detail-content .image-upload .note{
+                display: block;
+                text-align: center;
+                max-width: 200px;
+            }
+            .customer-detail .customer-detail-content .image-upload #upload-img {
+                width: 200px;
+                height: 200px;
+                border-radius: 50% 50%;
+                border: 1px solid #bbbbbb;
+            }
+        .customer-detail .customer-detail-content .input-image {
+            display: none;
+        }
+        .customer-detail .customer-detail-content .employee-information{
+            padding: 16px;
+            padding-right: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+            .customer-detail .customer-detail-content .employee-information .sub-title{
+                position: relative;
+                padding-bottom: 10px;
+            }
+            .customer-detail .customer-detail-content .employee-information .sub-title:nth-of-type(1) {
+                margin-top: 16px;
+            }
+            .customer-detail .customer-detail-content .employee-information .sub-title:before {
+                content: "";
+                position: absolute;
+                left: 0;
+                bottom: 0;
+                height: 1px;
+                width: 85px;
+                border-bottom: 4px solid #019160;
+            }    
+            .customer-detail .customer-detail-content .input-information{
+                display: inline-block;
+                flex-direction: column;
+                margin: 5px 10px 10px 0px;
+                position: relative;
+            }
+                .customer-detail .customer-detail-content .employee-information .input-information .name-information{
+                    display: block;
+                    margin-bottom: 5px;
+                }
+                .customer-detail .customer-detail-content  .input-information input{
+                    width:  304px;
+                    box-sizing: border-box;
+                }
+                    .customer-detail .customer-detail-content  .input-information input:focus {
+                        border-color: #019160 ;
+                    }
+                .customer-detail .customer-detail-content  .input-information .select-container{
+                    position: relative;
+                }
+                .customer-detail .customer-detail-content  .input-information .select-container .option{
+                    width: 304px;
+                    box-sizing: border-box;
+                }
+                .customer-detail .customer-detail-content  .input-information .icon-input{
+                    position: relative;
+                }
+                .customer-detail .footer {
+                    border-radius: 5px;
+                    position: absolute;
+                    width: 100%;
+                    background-color: #e9ebee;
+                    height: calc(100% - 595px);
+                    display: flex;
+                    justify-content: flex-end;
+                    align-items: center;
+                }
+                    .customer-detail .footer .cancel {
+                        width: 80px;
+                        padding: 0px;
+                    }
+                    .customer-detail .footer button {
+                        color: #ffffff;
+                        background-color: #019160;
+                        margin-right: 39px;
+                        padding-left: 44px;
+                        padding-right: 16px;
+                        background-image: url('../../../assets/icon/floppy-disk.png');
+                        background-repeat: no-repeat;
+                        background-size: 12px;
+                        background-position: 16px center;
+                        height: 40px;
+                        outline: none;
+                        border: none;
+                        cursor: pointer;
+                        border-radius: 4px;
+                    }
+                        .customer-detail .footer button:last-of-type {
+                            align-self: center;
+                            background-image: none;
+                            color: #000000;
+                            background-color: #e9ebee;
+                        }
+                        .customer-detail .footer button:first-of-type:hover{
+                            background-color: #bbbbbb;
+                        }
+.block{
+    display: block !important;
+}
+.currency {
+    position: absolute;
+    font-style: italic;
+    right: 16px;
+    top: 12.31px;
+}
+.large-input{
+    width: 522px !important;
+}
+.full-input{
+    width: 100% !important;
+}
+@font-face {
+    font-family: 'GoogleSans-Bold';
+    src: url('../../font/GoogleSans-Bold.otf') format('opentype');
+}
+@font-face {
+    font-family: 'GoogleSans-Regular';
+    src: url('../../font/GoogleSans-Regular.otf') format('opentype');
+}
+@media  screen and (max-width: 1366px) {
+    /* insert styles here */
+    .customer-detail .footer{
+        height: calc(100% - 587px) !important
+    }
+    .customer-detail{
+        overflow: scroll;
+    }
+}
+@media screen and (max-width: 1024px) {
+    .customer-detail .footer{
+        height: calc(100% - 587px) !important
+    }
+    .customer-table .count-col{
+        width: 6% !important;
+    }
+    .filter-left .combobox,.filter-left .select-custom .option{
+        width: 200px !important;
+    }
+}

@@ -1,0 +1,44 @@
+﻿.grid {
+    margin: 0px 16px;
+    margin-top: 16px;
+    height: calc(100vh - 230px);
+    overflow: scroll;
+    position: relative;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+table th,td{
+    border-bottom: 1px solid #bbbbbb;
+    text-align: center;
+    white-space: nowrap;
+    max-width: 100px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    height: 19px;
+    box-sizing: border-box;
+    padding: 0px 10px;
+}
+table tr{
+    height: 48px;
+    box-sizing: border-box;
+}
+table tr:nth-child(odd){
+    background-color: #e9ebee;
+}
+table th{
+    position: sticky;
+    top: 0;
+    background-color: #ffffff;
+}
+tr:hover{
+    background-color: #bbbbbb !important;
+}
+.edit-icon,.delete-icon{
+    align-self: center;
+    width: 20px;
+    height: 20px;
+    margin-left: 5px;
+    cursor: pointer;
+}

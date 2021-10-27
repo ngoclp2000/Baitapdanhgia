@@ -1,0 +1,133 @@
+.m-btn-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 40px;
+    border-radius: 4px;
+    color: #ffffff;
+    border: none;
+    background-repeat: no-repeat;
+    box-sizing: border-box;
+}
+.m-btn-default{
+    background-repeat: no-repeat;
+    background-position: 16px center;
+    height: 40px;
+    border: none;
+    border-radius: 4px;
+    color: #ffffff;
+    background-color: #019160;
+    padding-left: 44px;
+    padding-right: 16px;
+}
+    .m-btn-default:hover {
+        background-color: #2FBE8E;
+    }
+
+    .m-btn-default:active {
+        background-color: #01B075
+    }
+
+    .m-btn-default .button-icon {
+        margin-right: 8px;
+    }
+
+.m-btn-refresh ,.m-btn-delete{
+    background-repeat: no-repeat;
+    background-position: center;
+    width: 40px;
+    height: 40px;
+    padding: 10px 16px;
+    border: 1px solid #bbbbbb;
+    border-radius: 4px;
+    cursor: pointer;
+}
+.m-btn-delete{
+    background-size: 20px;
+    background-position: center;
+}
+.m-btn-refresh:hover,.m-btn-delete:hover {
+    background-color: #E9EBEE !important;
+}
+
+.m-btn-refresh:active,.m-btn-delete:active {
+    background-color: #01B075 !important;
+}
+/* .btn-icon {
+    background-position: center;
+    width: 16px;
+    height: 16px;
+} */
+.m-btn-close {
+    height: 40px;
+    width: 40px;
+    position: absolute;
+    right: 40px;
+    top: 14px;
+}
+.m-btn-close button{
+    height: 40px;
+    width: 40px;
+    border: none;
+    background-color: #ffffff;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.m-btn-close button:hover{
+    background-color:#e9ebee;
+}
+.m-m-btn-resize-container{
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    right: 0px;
+    bottom: 20px;
+    border-top-left-radius: 4px;
+    border-bottom-left-radius: 4px;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+}
+.m-btn-resize {
+    border-top-left-radius: 4px;
+    border-bottom-left-radius: 4px;
+    background-color: #b8c7d6;
+    width: 30px;
+    height: 30px;
+    right: 0px;
+    display: flex;
+    border: none;
+    background-size: 14px;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+.m-btn-resize img{
+    width: 14px;
+    height: 14px;
+    pointer-events: visibleStroke;
+}
+.m-btn-reverse button{
+    transform: scaleX(-1);
+    border-radius: 4px;
+    border-top-left-radius: 0px;
+    border-bottom-left-radius: 0px;
+}
+.m-btn-first{
+    color: #ffffff;
+    background-color: #019160;
+}
+.m-btn-first:hover{
+    background-color: #01b075 !important;
+}
+.m-btn-second{
+    color: #000000;
+    background-color: #f4f4f4;
+}
+.m-btn-second:hover{
+    background-color: #e5e5e5 !important;
+}
+@font-face {
+    font-family: 'GoogleSans-Regular';
+    src: url('../../font/GoogleSans-Regular.otf') format('opentype');
+}

@@ -1,0 +1,170 @@
+﻿.content{
+    box-sizing: border-box;
+    position: absolute;
+    top: 61px;
+    left: 221px;
+    width: calc(100% - 221px);
+    height: calc(100vh - 61px);
+    transition: all 0.3s ease-out;
+}
+    /* Page title*/
+    .content .content-header{
+        padding: 16px;
+        display: flex;
+        align-items : center;
+    }
+        .content .content-header .title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #000000;
+        }
+        .content .content-header .m-btn-container {
+            position: absolute;
+            right: 16px;
+        }
+        
+    /* Filter bar*/
+    .content .filter-bar {
+        box-sizing: border-box;
+        width: 100%;
+        padding-left: 16px;
+    }
+    .content input{
+        box-sizing: border-box;
+    }
+    .content input:focus{
+        border-color: #019160;
+    }
+        
+        .content .filter-bar .filter-select .select-custom .option{
+            width: 250px;
+            box-sizing: border-box;
+        }
+        .content .filter-bar .filter-select .icon-input{
+            position: relative;
+            pointer-events: none;
+        }
+    /* Paging Bar */
+    .content .paging-bar{
+        height: 56px;
+        margin: 0px 16px;
+        position: relative;
+        align-items: center;
+        background-color: #ffffff;
+    }
+        .content .paging-bar .display-number{
+            float: left;
+            position :absolute;
+            top: 50%;
+            left: 16px;
+            transform: translate(0%,-50%);
+        }
+        .content .paging-bar .max-number{
+            float: right;
+            position :absolute;
+            top: 50%;
+            right: 16px;
+            transform: translate(0%,-50%);
+        }
+        .content .paging-bar .paging{
+            display: flex;
+            position :absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%,-50%);
+        }
+            .content .paging-bar .paging .m-btn-container{
+                width : 40px;
+                height : 34px;
+                border-radius: 4px;
+            }
+            .content .paging-bar .paging .m-btn-container .btn-symbol{
+                width : 40px;
+                height : 34px;
+                border: none;
+                background-position: center;
+                background-repeat: no-repeat;
+                outline: none;
+            }
+            .content .paging-bar .paging .m-btn-container .btn-symbol:hover{
+                background-color: #bbbbbb !important;
+                border-radius: 4px !important;
+            }
+            .content .paging-bar .paging .m-btn-container .btn-text:hover{
+                background-color: #bbbbbb ;
+            }
+            .content .paging-bar .paging .m-btn-container .btn-text{
+                width : 28px;
+                height : 28px;
+                outline: none;
+                border: 1px solid #bbbbbb;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                border-radius: 50% 50%;
+            }
+            .content .paging-bar .paging .m-btn-container .btn-symbol:hover{
+                background-color: #ffffff;
+            }
+            .content .paging-bar .paging img{
+                padding: 5px;
+            }
+                .content .paging-bar .paging img:hover{
+                    background-color: #ffffff;
+                    border-radius: 4px;
+                }
+            .content .paging-bar .paging .paging-number{
+                text-align: center;
+                align-self: center;
+                padding: 5px;
+                border: 1px solid #bbbbbb;
+                border-radius: 50% 50%;
+                height: 16px;
+                width: 16px;
+                margin: 0px 5px;
+            }
+.content .paging-bar .cbo {
+    margin-left: 0px !important;
+    width: 170px;
+    border: 1px solid #bbbbbb;
+    border-radius: 4px;
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translate(0%,-50%);
+}
+.content .paging-bar .cbo .select-custom .option{
+    width: 170px !important;
+    box-sizing: border-box !important;
+}
+.content .paging-bar .cbo .combobox{
+    font-family: "GoogleSans-Bold";
+    text-align: right;
+    padding-right: 5px !important;
+    width: 45px;
+    border: none;
+    cursor: auto;
+}
+.content .paging-bar .cbo .x-icon{
+    left: 16px;
+    display: none !important;
+}
+.content .paging-bar .description-paging-size{
+    position: absolute;
+    right: 200px;
+    top: 50%;
+    transform: translate(0%,-50%);  
+}
+.content .paging-bar .cbo .type-data-paging{
+    display: inline-block !important;
+}
+
+@font-face {
+    font-family: 'GoogleSans-Bold';
+    src: url('../../font/GoogleSans-Bold.otf') format('opentype');
+}
+@media screen and (max-width: 1024px){
+    .content .paging-bar .paging{
+        transform: translate(-64%,-50%) !important;
+    }
+}
